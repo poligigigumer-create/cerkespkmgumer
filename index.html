@@ -928,7 +928,7 @@
         }
 
         // ================= AI DESIGN =================
-        async function generateAILayout() {
+       async function generateAILayout() {
             const tema = document.getElementById('in_tema').value.trim();
             if(!tema) return showToast('Harap isi Topik Utama terlebih dahulu!', 'error');
             document.getElementById('in_theme').value = 'umum'; updateBasicInfo();
@@ -937,30 +937,55 @@
             
             toggleLoading(true, "AI Merancang Layout...");
             try {
-                const resText = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=$){apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
-                const dataText = await resText.json();
+                // 1. CEK TOKEN DAN KUOTA UNTUK TEKS
+                const resText = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
                 
-                // PEMBERSIH TEKS OTOMATIS DARI AI
+                if (!resText.ok) {
+                    if (resText.status === 429) throw new Error("KUOTA HABIS: Batas penggunaan Token AI Anda sudah penuh.");
+                    if (resText.status === 400 || resText.status === 403) throw new Error("TOKEN TIDAK VALID: Cek kembali tulisan API Key Anda.");
+                    throw new Error("Gagal terhubung ke sistem AI.");
+                }
+
+                const dataText = await resText.json();
                 let rawText = dataText.candidates[0].content.parts[0].text;
-                rawText = rawText.replace(/```json/g, '').replace(/```/g, '');
+                
+                // Ekstrak paksa hanya bagian yang dibutuhkan
+                const jsonStart = rawText.indexOf('{');
+                const jsonEnd = rawText.lastIndexOf('}');
+                if (jsonStart === -1 || jsonEnd === -1) throw new Error("AI memberikan format desain yang salah.");
+                
+                rawText = rawText.substring(jsonStart, jsonEnd + 1);
                 const design = JSON.parse(rawText);
                 
                 const pArea = document.getElementById('poster-capture-area');
                 for(const [k,v] of Object.entries(design.css_vars)) pArea.style.setProperty(k,v);
                 
                 toggleLoading(true, "AI Melukis Latar...");
-                const resImg = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=$](https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=$){apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
+                
+                // 2. CEK TOKEN DAN KUOTA UNTUK GAMBAR
+                const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
+                
+                if (!resImg.ok) {
+                    if (resImg.status === 429) throw new Error("KUOTA GAMBAR HABIS: Token AI untuk gambar sudah mencapai batas.");
+                    if (resImg.status === 400 || resImg.status === 403) throw new Error("FITUR GAMBAR DITOLAK: Pastikan API Key diizinkan untuk membuat gambar.");
+                    throw new Error("Gagal mengambil gambar dari AI.");
+                }
+
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { 
+                if(dataImg.predictions && dataImg.predictions[0]) { 
                     pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
-                    showToast('Desain AI Selesai!'); 
+                    showToast('Desain AI Selesai!', 'success'); 
+                } else {
+                    throw new Error("AI gagal mengirimkan gambar.");
                 }
             } catch(e) { 
-                console.error("Laporan Masalah:", e);
-                showToast('Gagal memproses AI Design.', 'error'); 
+                console.error("Laporan Error:", e);
+                // Memunculkan peringatan spesifik ke layar
+                showToast(e.message || 'Gagal memproses AI Design.', 'error'); 
             }
             finally { toggleLoading(false); }
         }
+        
         async function generateAIBackground() {
             const pr = document.getElementById('in_prompt_bg').value.trim();
             if(!pr) return showToast('Harap isi deskripsi latar!', 'error');
