@@ -707,32 +707,26 @@
             loader.style.display = show ? 'flex' : 'none';
         }
 
-        // ================= LOGIN & CORE DATA =================
+      // ================= LOGIN & CORE DATA =================
         function prosesLogin() {
-            // Memaksa teks yang diketik menjadi huruf kecil agar selalu berhasil
+            // Memaksa isian menjadi huruf kecil agar selalu pas
             const u = document.getElementById('login-user').value.trim().toLowerCase();
             const p = document.getElementById('login-pass').value.trim().toLowerCase();
             
             if(u === "promkes" && p === "cerkes") {
-                // Membuat layar login memudar
                 document.getElementById('login-screen').style.opacity = '0';
-                
+                document.getElementById('login-screen').style.transform = 'scale(1.05)';
                 setTimeout(() => {
-                    // Membuang layar login sepenuhnya
                     document.getElementById('login-screen').style.display = 'none';
-                    
-                    // MEMAKSA halaman utama untuk langsung muncul (Anti-Macet)
+                    // Paksa halaman utama tampil
                     const halamanUtama = document.getElementById('main-app');
                     halamanUtama.classList.remove('hidden');
-                    halamanUtama.style.display = 'flex'; 
+                    halamanUtama.style.display = 'flex';
                     
-                    showToast('Berhasil Masuk Workspace!', 'success');
-                    
-                    // Memperbarui tampilan tanpa risiko merusak sistem
-                    try { updateBasicInfo(); } catch(e) {} 
+                    showToast('Welcome to Workspace!', 'success');
+                    updateBasicInfo();
                 }, 500);
             } else {
-                // Menampilkan kotak merah jika password salah
                 const err = document.getElementById('pesan-error');
                 err.classList.remove('hidden'); 
                 setTimeout(() => err.classList.add('hidden'), 3000);
