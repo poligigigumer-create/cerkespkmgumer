@@ -528,7 +528,7 @@
                 </div>
             </div>
 
-            <!-- ================= PANEL KANAN: PREVIEW (DENGAN FIX MOBILE SCROLL h-full) ================= -->
+            <!-- ================= PANEL KANAN: PREVIEW ================= -->
             <div id="tab-preview" class="tab-content w-full lg:w-[58%] xl:w-[65%] canvas-bg flex-col items-center h-full overflow-y-auto custom-scrollbar p-4 sm:p-8 pb-40 lg:pb-8">
                 
                 <!-- Premium Device Mockup Wrapper -->
@@ -927,8 +927,8 @@
             const cb = document.getElementById('out_caption'); cb.select(); document.execCommand('copy'); window.getSelection().removeAllRanges(); showToast('Tersalin ke Clipboard!');
         }
 
-        // ================= AI DESIGN =================
-       async function generateAILayout() {
+        // ================= AI DESIGN & BACKGROUND =================
+        async function generateAILayout() {
             const tema = document.getElementById('in_tema').value.trim();
             if(!tema) return showToast('Harap isi Topik Utama terlebih dahulu!', 'error');
             document.getElementById('in_theme').value = 'umum'; updateBasicInfo();
@@ -939,14 +939,17 @@
             try {
                 const resText = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
                 
-                // DETEKTIF PENOLAKAN GOOGLE
-                if (!resText.ok) throw new Error("API Key salah atau Kuota Habis (Error " + resText.status + ")");
+                if (!resText.ok) throw new Error("Kunci Google Salah atau Kuota Habis (Error " + resText.status + ")");
 
                 const dataText = await resText.json();
-                let rawText = dataText.candidates[0].content.parts[0].text;
-                rawText = rawText.replace(/```json/g, '').replace(/
-```/g, '');
-                const design = JSON.parse(rawText);
+                const rawText = dataText.candidates[0].content.parts[0].text;
+                
+                // ALAT PENCARI KURUNG OTOMATIS (ANTI GAGAL)
+                const awal = rawText.indexOf('{');
+                const akhir = rawText.lastIndexOf('}');
+                if (awal === -1 || akhir === -1) throw new Error("Format teks dari AI tidak dikenali.");
+                const teksBersih = rawText.substring(awal, akhir + 1);
+                const design = JSON.parse(teksBersih);
                 
                 const pArea = document.getElementById('poster-capture-area');
                 for(const [k,v] of Object.entries(design.css_vars)) pArea.style.setProperty(k,v);
@@ -954,15 +957,14 @@
                 toggleLoading(true, "AI Melukis Latar...");
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
                 
-                // DETEKTIF PENOLAKAN GOOGLE GAMBAR
-                if (!resImg.ok) throw new Error("Fitur Gambar Ditolak atau Kuota Habis (Error " + resImg.status + ")");
+                if (!resImg.ok) throw new Error("Fitur Gambar Ditolak oleh Google (Error " + resImg.status + ")");
 
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { 
+                if(dataImg.predictions && dataImg.predictions[0]) { 
                     pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
                     showToast('Desain AI Selesai!'); 
                 } else {
-                    throw new Error("Gambar gagal dibuat oleh AI.");
+                    throw new Error("Gambar gagal diproses oleh AI.");
                 }
             } catch(e) { 
                 console.error(e);
@@ -980,11 +982,10 @@
             try {
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:`Medical empty poster bg, ${pr}`},parameters:{sampleCount:1}}) });
                 
-                // DETEKTIF PENOLAKAN GOOGLE GAMBAR
-                if (!resImg.ok) throw new Error("API Key salah atau Kuota Habis (Error " + resImg.status + ")");
+                if (!resImg.ok) throw new Error("Fitur Gambar Ditolak oleh Google (Error " + resImg.status + ")");
 
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { 
+                if(dataImg.predictions && dataImg.predictions[0]) { 
                     document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
                     showToast('Latar AI Berhasil!'); 
                 } else {
@@ -1042,14 +1043,21 @@
                     }) 
                 });
                 
-                // DETEKTIF PENOLAKAN GOOGLE
-                if (!res.ok) throw new Error("API Key salah atau Kuota Habis (Error " + res.status + ")");
+                if (!res.ok) throw new Error("Kunci Google Salah atau Kuota Habis (Error " + res.status + ")");
 
                 const data = await res.json();
                 
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     let scriptContent = data.candidates[0].content.parts[0].text;
-                    scriptContent = scriptContent.replace(/```html/g, '').replace(/```/g, '');
+                    
+                    // PEMBERSIH KODE ANTI GAGAL
+                    const awalBody = scriptContent.indexOf('<');
+                    const akhirBody = scriptContent.lastIndexOf('>');
+                    if(awalBody !== -1 && akhirBody !== -1) {
+                         scriptContent = scriptContent.substring(awalBody, akhirBody + 1);
+                    }
+                    scriptContent = scriptContent.replace(/```html/g, '').replace(/
+```/g, '');
 
                     const wordHtml = `
                     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
