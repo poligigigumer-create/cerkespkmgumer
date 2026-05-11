@@ -709,20 +709,24 @@
 
         // ================= LOGIN & CORE DATA =================
         function prosesLogin() {
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
+            // Mengubah isian otomatis menjadi huruf kecil agar anti-gagal
+            const u = document.getElementById('login-user').value.trim().toLowerCase();
+            const p = document.getElementById('login-pass').value.trim().toLowerCase();
+            
             if(u === "promkes" && p === "cerkes") {
                 document.getElementById('login-screen').style.opacity = '0';
                 document.getElementById('login-screen').style.transform = 'scale(1.05)';
                 setTimeout(() => {
                     document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-app').classList.replace('hidden', 'flex');
-                    showToast('Welcome to Workspace!', 'success');
+                    document.getElementById('main-app').classList.remove('hidden');
+                    document.getElementById('main-app').classList.add('flex');
+                    showToast('Selamat Datang di Workspace!', 'success');
                     updateBasicInfo();
                 }, 500);
             } else {
                 const err = document.getElementById('pesan-error');
-                err.classList.remove('hidden'); setTimeout(() => err.classList.add('hidden'), 3000);
+                err.classList.remove('hidden'); 
+                setTimeout(() => err.classList.add('hidden'), 3000);
             }
         }
 
