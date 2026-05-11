@@ -410,7 +410,7 @@
                                 <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest" id="label_live">Lokasi / Platform</label>
                                 <div class="relative">
                                     <i class="fa-solid fa-location-dot absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input type="text" id="in_live" oninput="updateBasicInfo()" value="Facebook Puskesmas Gumer" class="w-full glass-input pl-9 pr-4 py-3 text-sm font-bold text-teal-700" placeholder="Facebook : Puskesmas Gumer">
+                                    <input type="text" id="in_live" oninput="updateBasicInfo()" value="Facebook : Puskesmas Gumer" class="w-full glass-input pl-9 pr-4 py-3 text-sm font-bold text-teal-700" placeholder="Facebook : Puskesmas Gumer">
                                 </div>
                             </div>
                         </div>
@@ -631,7 +631,7 @@
         // !! PERHATIAN !!
         // Sesuai aturan keamanan, biarkan API Key ini kosong ("").
         // Jika Anda menjalankan file ini di server pribadi/lokal, masukkan API key Anda di antara tanda kutip ganda di bawah ini.
-        const apiKey = "AIzaSyBf0ZcBS-SMyPggmcIltth0fsnSWYrfEYI"; 
+        const apiKey = "AIzaSyBrd8r1yXPndflGuAxe45EqDJpoh3rfE2A"; 
 
         const SESSION_LIMIT = 90 * 60 * 1000; // 90 menit dalam milidetik
         let sessionTimeoutId;
@@ -970,10 +970,27 @@
             toggleLoading(true, "AI Menulis Caption...");
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:p}]}]}) });
+                
+                if (!res.ok) {
+                    let errMsg = `Error ${res.status}`;
+                    if(res.status === 400) errMsg = "API Key tidak valid (400).";
+                    if(res.status === 403) errMsg = "Akses ditolak (403).";
+                    if(res.status === 429) errMsg = "Kuota habis (429).";
+                    try { const errData = await res.json(); if(errData.error && errData.error.message) errMsg += ` - ${errData.error.message}`; } catch(e){}
+                    throw new Error(errMsg);
+                }
+                
                 const data = await res.json();
-                if(data.candidates) { document.getElementById('out_caption').value = data.candidates[0].content.parts[0].text; showToast('AI Caption Sukses!'); }
-                else generateLocalCaption();
-            } catch(e) { generateLocalCaption(); }
+                if(data.candidates && data.candidates[0].content.parts[0].text) { 
+                    document.getElementById('out_caption').value = data.candidates[0].content.parts[0].text; 
+                    showToast('AI Caption Sukses!'); 
+                }
+                else throw new Error("Respon AI kosong.");
+            } catch(e) { 
+                console.error(e);
+                showToast(e.message, 'error');
+                generateLocalCaption(); 
+            }
             finally { toggleLoading(false); }
         }
 
@@ -1009,9 +1026,18 @@
                     body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig: { responseMimeType: "application/json" }}) 
                 });
                 
-                if (!resText.ok) throw new Error("Gagal mengambil data dari Google AI.");
+                if (!resText.ok) {
+                    let errMsg = `Gagal desain (Error ${resText.status}).`;
+                    if(resText.status === 400) errMsg = "API Key tidak valid (Error 400).";
+                    if(resText.status === 403) errMsg = "Akses AI ditolak (Error 403).";
+                    if(resText.status === 429) errMsg = "Kuota AI habis (Error 429).";
+                    try { const errData = await resText.json(); if(errData.error && errData.error.message) errMsg += ` Detail: ${errData.error.message}`; } catch(e){}
+                    throw new Error(errMsg);
+                }
 
                 const dataText = await resText.json();
+                if (!dataText.candidates || !dataText.candidates[0]) throw new Error("Balasan AI kosong atau terblokir.");
+                
                 const rawText = dataText.candidates[0].content.parts[0].text;
                 const design = parseJsonFromText(rawText);
                 
@@ -1028,15 +1054,28 @@
                     if (resImg.ok) {
                         const dataImg = await resImg.json();
                         if(dataImg.predictions && dataImg.predictions[0]) { 
-                            pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
+                            const b64 = dataImg.predictions[0].bytesBase64Encoded;
+                            if (b64) {
+                                pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${b64})`; 
+                            } else {
+                                pArea.style.backgroundImage = 'none';
+                            }
                         }
-                    } else { pArea.style.backgroundImage = 'none'; }
-                } catch(imgE) { pArea.style.backgroundImage = 'none'; }
+                    } else { 
+                        let imgErr = `Error ${resImg.status}`;
+                        try { const d = await resImg.json(); if(d.error) imgErr = d.error.message; } catch(e){}
+                        console.warn("Gambar gagal:", imgErr);
+                        pArea.style.backgroundImage = 'none'; 
+                    }
+                } catch(imgE) { 
+                    console.warn("Exception gambar:", imgE);
+                    pArea.style.backgroundImage = 'none'; 
+                }
                 
                 showToast('Desain AI Berhasil Diterapkan!'); 
             } catch(e) { 
                 console.error(e);
-                showToast('Gagal memproses AI Design.', 'error'); 
+                showToast(e.message || 'Gagal memproses AI Design.', 'error'); 
             }
             finally { toggleLoading(false); }
         }
@@ -1055,14 +1094,27 @@
                     body: JSON.stringify({instances:{prompt:`Medical empty poster bg, ${pr}`},parameters:{sampleCount:1}}) 
                 });
                 
-                if (!resImg.ok) throw new Error("Gagal mengambil gambar.");
+                if (!resImg.ok) {
+                    let errMsg = `Gagal melukis latar (Error ${resImg.status}).`;
+                    if(resImg.status === 400) errMsg = "API Key tidak valid (Error 400).";
+                    if(resImg.status === 403) errMsg = "Akses AI ditolak (Error 403).";
+                    if(resImg.status === 429) errMsg = "Kuota AI habis (Error 429).";
+                    try { const errData = await resImg.json(); if(errData.error && errData.error.message) errMsg += ` Detail: ${errData.error.message}`; } catch(e){}
+                    throw new Error(errMsg);
+                }
 
                 const dataImg = await resImg.json();
                 if(dataImg.predictions && dataImg.predictions[0]) { 
-                    document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
-                    showToast('Latar AI Berhasil Diterapkan!'); 
+                    const b64 = dataImg.predictions[0].bytesBase64Encoded;
+                    if (b64) {
+                        document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${b64})`; 
+                        showToast('Latar AI Berhasil Diterapkan!'); 
+                    } else {
+                        throw new Error("Data gambar kosong dari AI.");
+                    }
                 } else { throw new Error("Gambar ditolak oleh AI."); }
             } catch(e) { 
+                console.error(e);
                 showToast(e.message || 'Gagal memuat latar AI.', 'error'); 
             }
             finally { toggleLoading(false); }
@@ -1114,7 +1166,14 @@
                     }) 
                 });
                 
-                if (!res.ok) throw new Error("Gagal terhubung dengan server AI.");
+                if (!res.ok) {
+                    let errMsg = `Gagal (Error ${res.status}).`;
+                    if(res.status === 400) errMsg = "API Key tidak valid (Error 400).";
+                    if(res.status === 403) errMsg = "Akses AI ditolak (Error 403).";
+                    if(res.status === 429) errMsg = "Kuota AI habis (Error 429).";
+                    try { const errData = await res.json(); if(errData.error && errData.error.message) errMsg += ` Detail: ${errData.error.message}`; } catch(e){}
+                    throw new Error(errMsg);
+                }
 
                 const data = await res.json();
                 
@@ -1162,7 +1221,7 @@
                 }
             } catch(error) {
                 console.error(error);
-                showToast('Gagal memproses script. Coba lagi nanti.', 'error');
+                showToast(error.message || 'Gagal memproses script.', 'error');
             } finally {
                 toggleLoading(false);
             }
