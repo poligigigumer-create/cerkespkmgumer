@@ -260,44 +260,8 @@
 </head>
 <body class="text-slate-800 font-sans h-[100dvh] flex flex-col overflow-hidden selection:bg-emerald-200 selection:text-emerald-900">
 
-    <!-- DESAIN LOGIN BARU YANG ELEGAN & GELAP -->
-    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 z-[100] flex items-center justify-center p-4 transition-all duration-700">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 mix-blend-overlay"></div>
-        <div class="relative w-full max-w-md bg-white/10 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/20 transform transition-all">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 border border-white/20 shadow-[0_0_30px_rgba(52,211,153,0.3)] mb-4 animate-float">
-                    <i class="fa-solid fa-laptop-medical text-4xl text-emerald-400"></i>
-                </div>
-                <h2 class="text-3xl font-poppins font-black text-white tracking-tight">CERKES<span class="text-emerald-400">.AI</span></h2>
-                <p class="text-emerald-200/80 text-xs mt-2 font-bold uppercase tracking-[0.2em]">Puskesmas Gunung Meriah</p>
-            </div>
-            
-            <div id="pesan-error" class="hidden bg-red-500/20 text-red-200 text-xs font-bold p-4 rounded-2xl text-center border border-red-500/30 mb-6 backdrop-blur-md">
-                <i class="fa-solid fa-shield-halved mr-1.5"></i> Akses Ditolak! Cek kembali.
-            </div>
-
-            <div class="space-y-5">
-                <div>
-                    <div class="relative group">
-                        <i class="fa-regular fa-circle-user absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-emerald-400 transition-colors"></i>
-                        <input type="text" id="login-user" class="w-full pl-12 pr-4 py-4 bg-black/20 border border-white/10 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white outline-none transition-all font-semibold text-sm placeholder-white/30 backdrop-blur-sm" placeholder="Username (promkes)">
-                    </div>
-                </div>
-                <div>
-                    <div class="relative group">
-                        <i class="fa-solid fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-emerald-400 transition-colors"></i>
-                        <input type="password" id="login-pass" class="w-full pl-12 pr-4 py-4 bg-black/20 border border-white/10 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white outline-none transition-all font-semibold text-sm placeholder-white/30 backdrop-blur-sm" placeholder="Password (cerkes)">
-                    </div>
-                </div>
-                <button onclick="prosesLogin()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 rounded-2xl transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] mt-2 flex justify-center items-center gap-2 active:scale-95 text-sm uppercase tracking-wider">
-                    Buka Workspace <i class="fa-solid fa-unlock-keyhole ml-1"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP WRAPPER -->
-    <div id="main-app" class="hidden flex-1 flex-col w-full h-full relative">
+    <!-- MAIN APP WRAPPER (LANGSUNG TAMPIL, TANPA LOGIN) -->
+    <div id="main-app" class="flex-1 flex flex-col w-full h-full relative">
 
         <!-- PREMIUM NAVBAR -->
         <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm z-20 sticky top-0 flex-shrink-0">
@@ -674,31 +638,7 @@
             loader.style.display = show ? 'flex' : 'none';
         }
 
-        // ================= LOGIN & CORE DATA =================
-        function prosesLogin() {
-            const u = document.getElementById('login-user').value.trim().toLowerCase();
-            const p = document.getElementById('login-pass').value.trim().toLowerCase();
-            
-            if(u === "promkes" && p === "cerkes") {
-                document.getElementById('login-screen').style.opacity = '0';
-                document.getElementById('login-screen').style.transform = 'scale(1.05)';
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    
-                    const halamanUtama = document.getElementById('main-app');
-                    halamanUtama.classList.remove('hidden');
-                    halamanUtama.style.display = 'flex';
-                    
-                    showToast('Selamat Datang di Workspace!', 'success');
-                    try { updateBasicInfo(); } catch(e) {}
-                }, 500);
-            } else {
-                const err = document.getElementById('pesan-error');
-                err.classList.remove('hidden'); 
-                setTimeout(() => err.classList.add('hidden'), 3000);
-            }
-        }
-
+        // ================= CORE DATA =================
         function updateBasicInfo() {
             const theme = document.getElementById('in_theme').value;
             const poster = document.getElementById('poster-capture-area');
@@ -862,9 +802,16 @@
                 if(btnC) { btnC.innerHTML = '<i class="fa-solid fa-pen-nib text-teal-500"></i> Buat Lokal'; }
             }
         }
+        
+        // Memuat semua persiapan saat pertama kali halaman terbuka
         window.addEventListener('online', () => { updateNetworkStatus(); showToast('Koneksi terhubung. AI Aktif!', 'success'); });
         window.addEventListener('offline', () => { updateNetworkStatus(); showToast('Offline. Fitur AI Dinonaktifkan.', 'error'); });
-        document.addEventListener('DOMContentLoaded', () => { updateNetworkStatus(); switchTab('editor'); });
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            updateNetworkStatus(); 
+            switchTab('editor'); 
+            updateBasicInfo(); // Menyiapkan poster begitu aplikasi terbuka
+        });
 
         // ================= AI CAPTION =================
         function generateLocalCaption() {
@@ -917,7 +864,6 @@
                 const dataText = await resText.json();
                 const rawText = dataText.candidates[0].content.parts[0].text;
                 
-                // Mencegah error pembacaan AI
                 const awal = rawText.indexOf('{');
                 const akhir = rawText.lastIndexOf('}');
                 if (awal === -1 || akhir === -1) throw new Error("Format teks dari AI tidak dikenali.");
