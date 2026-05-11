@@ -937,20 +937,30 @@
             
             toggleLoading(true, "AI Merancang Layout...");
             try {
-                const resText = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
+                const resText = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=$](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=$){apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
                 const dataText = await resText.json();
-                const design = JSON.parse(dataText.candidates[0].content.parts[0].text);
+                
+                // PEMBERSIH TEKS OTOMATIS DARI AI
+                let rawText = dataText.candidates[0].content.parts[0].text;
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '');
+                const design = JSON.parse(rawText);
+                
                 const pArea = document.getElementById('poster-capture-area');
                 for(const [k,v] of Object.entries(design.css_vars)) pArea.style.setProperty(k,v);
                 
                 toggleLoading(true, "AI Melukis Latar...");
-                const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
+                const resImg = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=$](https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=$){apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; showToast('Desain AI Selesai!'); }
-            } catch(e) { showToast('Gagal memproses AI Design.', 'error'); }
+                if(dataImg.predictions) { 
+                    pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
+                    showToast('Desain AI Selesai!'); 
+                }
+            } catch(e) { 
+                console.error("Laporan Masalah:", e);
+                showToast('Gagal memproses AI Design.', 'error'); 
+            }
             finally { toggleLoading(false); }
         }
-
         async function generateAIBackground() {
             const pr = document.getElementById('in_prompt_bg').value.trim();
             if(!pr) return showToast('Harap isi deskripsi latar!', 'error');
