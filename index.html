@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- OPTIMASI VERCEL: SEO & Open Graph Meta Tags -->
-    <title>CERKES Studio - Premium AI Poster Generator</title>
+    <title>CERKES Studio Pro - Premium AI Poster Generator</title>
     <meta name="description" content="Aplikasi pembuat poster kesehatan otomatis berbasis AI untuk UPTD Puskesmas Gunung Meriah.">
     <meta property="og:title" content="CERKES Studio AI">
     <meta property="og:description" content="Aplikasi pembuat poster kesehatan cerdas dan caption otomatis.">
     <meta property="og:type" content="website">
-    <meta name="theme-color" content="#0f172a"> 
+    <meta name="theme-color" content="#ffffff"> 
     
     <!-- Favicon SVG -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,9 +30,11 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], poppins: ['Poppins', 'sans-serif'] },
+                    colors: { brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 900: '#134e4a' } },
                     animation: {
                         'gradient-x': 'gradient-x 3s ease infinite',
                         'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         'gradient-x': { '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' }, '50%': { 'background-size': '200% 200%', 'background-position': 'right center' } },
@@ -49,40 +51,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; background-color: #f8fafc; }
         
         /* Premium Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Custom Input Utilities */
-        .glass-input { background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .glass-input:focus { background: #fff; border-color: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); outline: none; }
+        /* Custom Input Utilities - PRO VERSION */
+        .glass-input { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; transition: all 0.25s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .glass-input:focus { background: #ffffff; border-color: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); outline: none; }
+        .glass-input:hover:not(:focus) { border-color: #cbd5e1; }
         
-        /* Hide File Input, Style Label */
-        input[type="file"] { display: none; }
-        .file-upload-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .file-upload-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #475569; }
-        .file-upload-btn.has-file { background: #f0fdf4; border-color: #22c55e; border-style: solid; color: #166534; }
+        /* Hide File Input, Style Label (FIX IPHONE) */
+        input[type="file"] { position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1; overflow: hidden; }
+        .file-upload-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+        .file-upload-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #334155; }
+        .file-upload-btn.has-file { background: #f0fdf4; border-color: #22c55e; border-style: solid; color: #15803d; }
 
-        .canvas-bg { background-color: #f1f5f9; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 24px 24px; }
+        .canvas-bg { background-color: #f8fafc; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 24px 24px; }
+
+        /* Section Cards */
+        .premium-card { background: #ffffff; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(226, 232, 240, 0.8); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .premium-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.06); transform: translateY(-2px); }
 
         /* Mobile Tab System */
-        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-content.active { display: flex; }
         @media (min-width: 1024px) { .tab-content { display: flex !important; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* AI Gradient Button */
+        .btn-ai-magic { background-size: 200% auto; transition: 0.5s; background-image: linear-gradient(to right, #6366f1 0%, #a855f7 51%, #ec4899 100%); }
+        .btn-ai-magic:hover { background-position: right center; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.4); }
 
         /* =========================================================================
-           CORE POSTER CSS (DIKOPY UTUH AGAR DESAIN POSTER TETAP PRESISI)
+           CORE POSTER CSS (DO NOT MODIFY TO KEEP POSTER RENDERING INTACT)
            ========================================================================= */
         .poster-container { width: 100%; aspect-ratio: 9 / 16; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); background-color: #0f172a; background-size: cover; background-position: center; color: #fff; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 8px; container-type: inline-size; }
         .poster-content { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; padding: 8cqw 7cqw 6cqw 7cqw; box-sizing: border-box; }
         .shape { position: absolute; transition: all 0.6s ease; z-index: 1; pointer-events: none; }
         
-        /* HEADER (10%) */
         .header-area { display: flex; align-items: center; gap: 3cqw; margin-bottom: 5cqw; flex-shrink: 0; }
         .header-logo { width: 10cqw; height: 10cqw; background: #fff; color: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4.5cqw; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
         .header-text h4 { font-family: 'Poppins', sans-serif; font-size: 3.5cqw; font-weight: 800; margin: 0; line-height: 1; letter-spacing: 0.5px; }
@@ -91,12 +101,10 @@
         .custom-logo { max-height: 15cqw; max-width: 100%; object-fit: contain; filter: drop-shadow(0px 2px 10px rgba(255, 255, 255, 0.6)); }
         .default-header-wrapper { display: flex; align-items: center; gap: 3cqw; }
         
-        /* TITLE (20%) */
         .title-area { flex-shrink: 0; margin-bottom: 4cqw; }
         .badge-eps { display: inline-block; padding: 1cqw 3cqw; font-size: 2cqw; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 20px; margin-bottom: 2cqw; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
         .poster-title { font-family: 'Poppins', sans-serif; font-size: 6.5cqw; font-weight: 800; line-height: 1.15; margin: 0; letter-spacing: -0.5px;}
         
-        /* SPEAKERS (50%) */
         .speakers-area { flex-grow: 1; display: flex; flex-direction: column; gap: 3cqw; justify-content: center; align-items: stretch; margin-bottom: 4cqw; }
         .speaker-card { display: flex; position: relative; overflow: hidden; }
         .photo-wrapper { overflow: hidden; background: #e2e8f0; flex-shrink: 0; position: relative;}
@@ -106,14 +114,12 @@
         .speaker-name { font-weight: 800; font-size: 3.2cqw; margin: 0; line-height: 1.2; }
         .speaker-jabatan { font-size: 2cqw; opacity: 0.9; margin: 2px 0 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 500;}
         
-        /* FOOTER & TIME (20%) */
         .bottom-wrapper { flex-shrink: 0; display: flex; flex-direction: column; gap: 3cqw; margin-top: auto; }
         .time-area { display: flex; align-items: center; justify-content: center; gap: 2cqw; font-weight: 700; font-size: 2.8cqw; padding: 2.5cqw; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); width: 100%; box-sizing: border-box; text-align: center;}
         .footer-area { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 3cqw; gap: 2cqw;}
         .footer-live-badge { display: inline-flex; align-items: center; justify-content: center; gap: 2cqw; padding: 2.5cqw 4.5cqw; border-radius: 50px; font-size: 2.8cqw; font-weight: 800; border: 2px solid rgba(255,255,255,0.3); backdrop-filter: blur(6px); text-align: center; max-width: 95%; word-break: break-word; box-shadow: 0 8px 20px rgba(0,0,0,0.15); letter-spacing: 0.5px; line-height: 1.3;}
         .footer-sosmed { display: flex; justify-content: center; gap: 3cqw; font-size: 2cqw; opacity: 0.9; font-weight: 600;}
 
-        /* Multi-Narsum Scaling */
         .poster-container[data-narsum-count="1"] .speakers-area { gap: 4cqw; }
         .poster-container[data-narsum-count="2"] .speakers-area { gap: 2cqw; margin-bottom: 3cqw; }
         .poster-container[data-narsum-count="2"] .photo-wrapper { width: 22cqw !important; height: 22cqw !important; }
@@ -126,8 +132,7 @@
         .poster-container[data-narsum-count="3"] .speaker-card { padding: 2cqw; gap: 2.5cqw;}
         .poster-container[data-narsum-count="3"] .speaker-label { font-size: 1.5cqw !important; padding: 2px 5px; margin-bottom: 0.5cqw;}
 
-        /* ================= TEMA DESAIN CSS ================= */
-        /* == 1: UMUM == */
+        /* TEMA DESAIN CSS */
         [data-theme="umum"] { background: linear-gradient(135deg, var(--bg-start, #0f766e), var(--bg-end, #0369a1)); text-align: var(--align-text, left); }
         [data-theme="umum"] .header-area { justify-content: var(--align-header, flex-start); }
         [data-theme="umum"] .title-area { text-align: var(--align-text, left); }
@@ -141,7 +146,6 @@
         [data-theme="umum"] .time-area * { transform: var(--time-skew-reverse, skewX(5deg)); }
         [data-theme="umum"] .footer-live-badge { background: var(--badge-bg, #2563eb); color: #fff; border: none; }
 
-        /* == 2: POLI UMUM == */
         [data-theme="poli_umum"] { background: linear-gradient(135deg, #dcfce7 0%, #86efac 100%); color: #064e3b; }
         [data-theme="poli_umum"]::before { content: ''; position: absolute; top: -10%; left: -10%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%); border-radius: 50%; }
         [data-theme="poli_umum"]::after { content: '+'; position: absolute; bottom: 5%; left: 5%; font-size: 30cqw; color: rgba(22, 163, 74, 0.15); font-weight: 900; line-height: 1; }
@@ -155,7 +159,6 @@
         [data-theme="poli_umum"] .footer-live-badge { background: #fff; color: #16a34a; border: 3px solid #16a34a; box-shadow: 4px 4px 0px #16a34a;}
         [data-theme="poli_umum"] .footer-area { border-color: rgba(22, 163, 74, 0.3); }
 
-        /* == 3: POLI KIA == */
         [data-theme="poli_kia"] { background: radial-gradient(circle at top right, #fef08a, #fbcfe8 60%, #f472b6); color: #831843; }
         [data-theme="poli_kia"]::before { content: ''; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; background: radial-gradient(circle, #fff 10%, transparent 10%), radial-gradient(circle, #fff 10%, transparent 10%); background-size: 8cqw 8cqw; background-position: 0 0, 4cqw 4cqw; opacity: 0.2; }
         [data-theme="poli_kia"] .header-area { justify-content: center; background: #fff; padding: 2cqw 4cqw; border-radius: 50px; box-shadow: 0 10px 20px rgba(244, 114, 182, 0.3); align-self: center;}
@@ -173,7 +176,6 @@
         [data-theme="poli_kia"] .footer-live-badge { background: #db2777; color: #fff; border: 3px solid #fbcfe8; }
         [data-theme="poli_kia"] .footer-area { border-color: rgba(255, 255, 255, 0.6); }
 
-        /* == 4: POLI LANSIA == */
         [data-theme="poli_lansia"] { background: #fef08a; color: #78350f; background-image: radial-gradient(#fde047 20%, transparent 20%); background-size: 20px 20px; }
         [data-theme="poli_lansia"]::before { content: ''; position: absolute; inset: 4cqw; border: 3px dashed #ca8a04; border-radius: 20px;}
         [data-theme="poli_lansia"] .header-area { justify-content: center; background: #fff; border: 2px solid #ca8a04; padding: 1.5cqw 4cqw; border-radius: 10px; transform: rotate(-1deg); align-self: center;}
@@ -191,7 +193,6 @@
         [data-theme="poli_lansia"] .footer-live-badge { background: #ca8a04; color: #fff; border: 2px dashed #fff; border-radius: 0;}
         [data-theme="poli_lansia"] .footer-area { border-color: rgba(180, 83, 9, 0.2); }
 
-        /* == 5: POLI REMAJA == */
         [data-theme="poli_remaja"] { background: #3b82f6; color: #fff; background-image: repeating-linear-gradient(45deg, #60a5fa 0, #60a5fa 4px, transparent 4px, transparent 12px); }
         [data-theme="poli_remaja"]::before { content: ''; position: absolute; bottom: -10%; left: -20%; width: 150%; height: 40%; background: #f472b6; transform: rotate(15deg); border-top: 6px solid #000; }
         [data-theme="poli_remaja"] .header-text h4 { color: #fde047; text-shadow: 2px 2px 0px #000;}
@@ -211,7 +212,6 @@
         [data-theme="poli_remaja"] .footer-live-badge { background: #000; color: #fde047; border: 3px solid #fde047; border-radius: 0; transform: skewX(-10deg);}
         [data-theme="poli_remaja"] .footer-area { border: none; }
 
-        /* == 6: ISLAMI == */
         [data-theme="islami"] { background: linear-gradient(135deg, #10b981, #047857); color: #fff; }
         [data-theme="islami"]::before { content: ''; position: absolute; inset: 2cqw; border: 3px solid rgba(253, 224, 71, 0.4); border-radius: 200px 200px 0 0; }
         [data-theme="islami"]::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(#fde047 2px, transparent 2px); background-size: 25px 25px; opacity: 0.15; }
@@ -230,7 +230,6 @@
         [data-theme="islami"] .footer-live-badge { background: #047857; color: #fde047; border: 2px solid #fde047; }
         [data-theme="islami"] .footer-area { border-color: rgba(253, 224, 71, 0.3); }
 
-        /* == 7: POLI GIGI == */
         [data-theme="poli_gigi"] { background: #cffafe; color: #0891b2; background-image: radial-gradient(circle at 0% 100%, #38bdf8 0%, transparent 60%);}
         [data-theme="poli_gigi"]::before { content: ''; position: absolute; top: -20%; right: -20%; width: 60%; height: 60%; background: #fff; border-radius: 50%; opacity: 0.6; filter: blur(20px); }
         [data-theme="poli_gigi"] .header-text h4 { color: #0369a1; }
@@ -249,7 +248,6 @@
         [data-theme="poli_gigi"] .footer-live-badge { background: #fff; color: #0284c7; border: 2px solid #0ea5e9; border-radius: 20px; }
         [data-theme="poli_gigi"] .footer-area { border-color: rgba(2, 132, 199, 0.2); }
 
-        /* == 8: FARMASI & LAB == */
         [data-theme="farmasi_lab"] { background: #e0e7ff; color: #312e81; background-image: radial-gradient(#818cf8 1px, transparent 1px); background-size: 15px 15px; }
         [data-theme="farmasi_lab"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px), linear-gradient(0deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px); background-size: 5cqw 5cqw; }
         [data-theme="farmasi_lab"] .header-text h4 { color: #4f46e5; letter-spacing: 2px; }
@@ -264,7 +262,6 @@
         [data-theme="farmasi_lab"] .footer-live-badge { background: #fff; color: #4f46e5; border: 2px solid #6366f1; border-radius: 0; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%); padding-left: 6cqw; padding-right: 6cqw;}
         [data-theme="farmasi_lab"] .footer-area { border-color: rgba(99, 102, 241, 0.2); }
 
-        /* == 9: POLI JIWA == */
         [data-theme="poli_jiwa"] { background: linear-gradient(120deg, #fbcfe8, #bfdbfe, #fde047); color: #4c1d95; }
         [data-theme="poli_jiwa"]::before { content: ''; position: absolute; top: 10%; left: 10%; width: 50%; height: 50%; background: #fecdd3; border-radius: 50%; opacity: 0.6; filter: blur(40px); }
         [data-theme="poli_jiwa"]::after { content: ''; position: absolute; bottom: 10%; right: 10%; width: 60%; height: 60%; background: #ddd6fe; border-radius: 50%; opacity: 0.6; filter: blur(40px); }
@@ -283,205 +280,243 @@
         [data-theme="poli_jiwa"] .footer-area { border-color: rgba(76, 29, 149, 0.15); }
 
         /* Loader Overlay */
-        .loader-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; display: none; }
-        .spinner { width: 60px; height: 60px; border: 5px solid #f1f5f9; border-top: 5px solid #0d9488; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 20px rgba(13, 148, 136, 0.3); }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; display: none; }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(13, 148, 136, 0.2); border-top: 4px solid #0d9488; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 20px rgba(13, 148, 136, 0.3); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+<body class="text-slate-800 font-sans h-[100dvh] flex flex-col overflow-hidden selection:bg-teal-200 selection:text-teal-900">
 
     <!-- MODAL LOGIN PREMIUM -->
-    <div id="login-screen" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-all duration-500">
-        <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-white/20 transform transition-all">
-            <div class="p-8 text-center relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-                <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-teal-400 to-emerald-500 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(20,184,166,0.4)] animate-float relative z-10">
-                    <i class="fa-solid fa-wand-magic-sparkles text-3xl text-white"></i>
+    <div id="login-screen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[100] flex items-center justify-center p-4 transition-all duration-700">
+        <div class="bg-white rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-sm overflow-hidden border border-white/50 transform transition-all relative">
+            <div class="p-10 text-center relative overflow-hidden bg-slate-50 border-b border-slate-100">
+                <div class="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-teal-500 to-emerald-400 rounded-[20px] flex items-center justify-center mb-5 shadow-[0_10px_30px_rgba(20,184,166,0.3)] animate-float relative z-10 rotate-3">
+                    <i class="fa-solid fa-wand-magic-sparkles text-3xl text-white -rotate-3"></i>
                 </div>
-                <h2 class="text-2xl font-poppins font-black text-white relative z-10">CERKES<span class="text-teal-400">.AI</span></h2>
-                <p class="text-slate-400 text-xs mt-1 font-medium relative z-10 uppercase tracking-widest">Puskesmas Gunung Meriah</p>
+                <h2 class="text-2xl font-poppins font-black text-slate-800 relative z-10 tracking-tight">CERKES<span class="text-teal-600">.AI</span></h2>
+                <p class="text-slate-400 text-[10px] mt-1.5 font-bold relative z-10 uppercase tracking-widest">Puskesmas Gunung Meriah</p>
             </div>
-            <div class="p-8 space-y-5">
+            <div class="p-8 space-y-5 bg-white">
                 <div id="pesan-error" class="hidden bg-red-50 text-red-600 text-xs font-bold p-3 rounded-xl text-center border border-red-100">
                     <i class="fa-solid fa-triangle-exclamation mr-1"></i> Kredensial Tidak Valid!
                 </div>
                 <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider pl-1">Username</label>
                     <div class="relative">
-                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="login-user" class="w-full pl-11 pr-4 py-3.5 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all font-medium text-sm" placeholder="Username">
+                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="login-user" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:bg-white outline-none transition-all font-semibold text-sm text-slate-700 placeholder-slate-300" placeholder="Masukkan username">
                     </div>
                 </div>
                 <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider pl-1">Password</label>
                     <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="password" id="login-pass" class="w-full pl-11 pr-4 py-3.5 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all font-medium text-sm" placeholder="Password">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" id="login-pass" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:bg-white outline-none transition-all font-semibold text-sm text-slate-700 placeholder-slate-300" placeholder="••••••••">
                     </div>
                 </div>
-                <button onclick="prosesLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-slate-900/20 mt-2 flex justify-center items-center gap-2 active:scale-95 text-sm">
-                    Masuk ke Workspace <i class="fa-solid fa-arrow-right ml-1"></i>
+                <button onclick="prosesLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl transition-all shadow-[0_8px_20px_rgba(15,23,42,0.2)] hover:shadow-[0_12px_25px_rgba(15,23,42,0.3)] mt-4 flex justify-center items-center gap-2 active:scale-95 text-sm">
+                    Masuk Workspace <i class="fa-solid fa-arrow-right-long ml-1 opacity-70"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- MAIN APP WRAPPER -->
-    <div id="main-app" class="hidden flex-1 flex-col w-full h-full">
+    <div id="main-app" class="hidden flex-1 flex-col w-full h-full relative">
 
         <!-- PREMIUM NAVBAR -->
-        <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 z-20 relative sticky top-0 flex-shrink-0">
+        <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm z-20 sticky top-0 flex-shrink-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center gap-3">
-                        <div class="bg-slate-900 text-white w-8 h-8 rounded-lg flex items-center justify-center shadow-sm">
-                            <i class="fa-solid fa-wand-magic-sparkles text-sm text-teal-400"></i>
+                        <div class="bg-gradient-to-tr from-teal-600 to-emerald-500 text-white w-9 h-9 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
                         </div>
                         <div>
-                            <h1 class="font-poppins font-black text-slate-800 leading-tight tracking-tight text-lg">CERKES<span class="text-teal-600">.AI</span></h1>
+                            <h1 class="font-poppins font-black text-slate-800 leading-none tracking-tight text-xl">CERKES<span class="text-teal-600">.AI</span></h1>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div id="network-status" class="flex items-center text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div id="network-status" class="flex items-center text-[10px] sm:text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 transition-colors shadow-sm">
                             <i class="fa-solid fa-wifi mr-1.5"></i> <span id="network-text" class="hidden sm:inline">Online</span>
                         </div>
-                        <button onclick="downloadPoster()" class="hidden lg:flex bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md active:scale-95 items-center gap-2 text-sm">
-                            <i class="fa-solid fa-download"></i> Ekspor
+                        <button onclick="downloadPoster()" class="hidden lg:flex bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-5 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 items-center gap-2 text-sm border border-slate-700">
+                            <i class="fa-solid fa-download text-xs"></i> Ekspor HD
                         </button>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <!-- CONTENT AREA (SPLIT DESKTOP, TABS MOBILE) -->
-        <main class="flex-1 flex w-full relative overflow-hidden bg-slate-50">
+        <!-- CONTENT AREA -->
+        <main class="flex-1 flex w-full relative overflow-hidden bg-[#F8FAFC]">
             
             <!-- Loading Overlay -->
             <div id="ai-loading" class="loader-overlay">
                 <div class="spinner"></div>
-                <p id="ai-loading-text" class="text-slate-800 font-poppins font-black text-sm tracking-widest uppercase">Memproses...</p>
+                <p id="ai-loading-text" class="text-slate-800 font-poppins font-black text-sm tracking-widest uppercase bg-white px-6 py-2 rounded-full shadow-sm border border-slate-100">Memproses...</p>
             </div>
 
-            <!-- ================= PANEL KIRI: EDITOR (TAB 1 PADA MOBILE) ================= -->
-            <div id="tab-editor" class="tab-content active w-full lg:w-[45%] xl:w-[40%] flex-col h-full overflow-y-auto custom-scrollbar border-r border-slate-200/60 pb-24 lg:pb-0">
+            <!-- ================= PANEL KIRI: EDITOR ================= -->
+            <div id="tab-editor" class="tab-content active w-full lg:w-[42%] xl:w-[35%] flex-col h-full overflow-y-auto custom-scrollbar border-r border-slate-200 pb-40 lg:pb-8 bg-slate-50/50">
                 <div class="p-4 sm:p-6 space-y-6">
                     
                     <!-- INFO DASAR -->
-                    <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/50">
-                        <h2 class="text-sm font-poppins font-bold text-slate-800 mb-5 flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-md bg-teal-50 text-teal-600 flex items-center justify-center"><i class="fa-solid fa-layer-group text-xs"></i></span>
-                            Informasi Dasar
-                        </h2>
-                        <div class="space-y-4">
+                    <section class="premium-card p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100">
+                                <i class="fa-solid fa-layer-group text-sm"></i>
+                            </div>
+                            <h2 class="text-sm font-poppins font-bold text-slate-800">Informasi Dasar</h2>
+                        </div>
+                        <div class="space-y-4.5">
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Logo Kustom (Ops.)</label>
-                                <label class="file-upload-btn" id="lbl_logo">
-                                    <i class="fa-solid fa-cloud-arrow-up text-lg"></i> <span>Pilih Gambar Logo</span>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Logo Kustom</label>
+                                <label class="file-upload-btn group" id="lbl_logo">
+                                    <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400 group-hover:text-teal-500 transition-colors"></i> <span>Unggah Logo Baru</span>
                                     <input type="file" id="in_logo" accept="image/*">
                                 </label>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tema Desain</label>
-                                <select id="in_theme" onchange="updateBasicInfo()" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm font-bold text-slate-700 appearance-none cursor-pointer">
-                                    <option value="umum" selected>🤖 AI Auto-Pilot Mode</option>
-                                    <option value="poli_umum">🏥 Poli Umum (Hijau Kapsul)</option>
-                                    <option value="poli_kia">👶 Poli KIA / KB (Pink Zig-zag)</option>
-                                    <option value="poli_lansia">👵 Poli Lansia (Kuning Retro)</option>
-                                    <option value="poli_remaja">⚡ Poli Remaja (Biru Pop-Art)</option>
-                                    <option value="islami">🕌 Tema Islami (Kubah Emerald)</option>
-                                    <option value="poli_gigi">🦷 Poli Gigi (Cyan Air)</option>
-                                    <option value="farmasi_lab">🔬 Farmasi & Lab (Neon Sci-Fi)</option>
-                                    <option value="poli_jiwa">🧠 Poli Jiwa (Pastel Kaca)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Topik Kegiatan</label>
-                                <textarea id="in_tema" oninput="updateBasicInfo()" rows="2" class="w-full glass-input rounded-2xl px-4 py-3 text-sm resize-none font-semibold text-slate-800" placeholder="Contoh: Cegah Stunting..."></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Edisi Spesial (Ops.)</label>
-                                <input type="text" id="in_edisi" oninput="updateBasicInfo()" class="w-full glass-input rounded-2xl px-4 py-3 text-sm font-medium" placeholder="Misal: Spesial Hari Ibu">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tanggal</label>
-                                    <input type="text" id="in_tanggal" oninput="updateBasicInfo()" class="w-full glass-input rounded-2xl px-4 py-3 text-sm font-medium" placeholder="25 Mei 2026">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Waktu</label>
-                                    <input type="text" id="in_jam" oninput="updateBasicInfo()" class="w-full glass-input rounded-2xl px-4 py-3 text-sm font-medium" placeholder="09:00 WIB">
+                            <div class="pt-2">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Tema Visual</label>
+                                <div class="relative">
+                                    <select id="in_theme" onchange="updateBasicInfo()" class="w-full glass-input px-4 py-3.5 text-sm font-bold text-slate-700 appearance-none cursor-pointer">
+                                        <option value="umum" selected>🤖 AI Auto-Pilot (Smart Mode)</option>
+                                        <option value="poli_umum">🏥 Poli Umum (Hijau Kapsul)</option>
+                                        <option value="poli_kia">👶 Poli KIA / KB (Pink Zig-zag)</option>
+                                        <option value="poli_lansia">👵 Poli Lansia (Kuning Retro)</option>
+                                        <option value="poli_remaja">⚡ Poli Remaja (Biru Pop-Art)</option>
+                                        <option value="islami">🕌 Tema Islami (Kubah Emerald)</option>
+                                        <option value="poli_gigi">🦷 Poli Gigi (Cyan Air)</option>
+                                        <option value="farmasi_lab">🔬 Farmasi & Lab (Neon Sci-Fi)</option>
+                                        <option value="poli_jiwa">🧠 Poli Jiwa (Pastel Kaca)</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                                 </div>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider" id="label_live">Akun Live / Platform</label>
-                                <input type="text" id="in_live" oninput="updateBasicInfo()" value="Facebook : Puskesmas Gumer" class="w-full glass-input rounded-2xl px-4 py-3 text-sm font-bold text-teal-700" placeholder="Facebook : Puskesmas Gumer">
+                            <div class="pt-2">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Topik Utama</label>
+                                <textarea id="in_tema" oninput="updateBasicInfo()" rows="2" class="w-full glass-input px-4 py-3 text-sm resize-none font-semibold text-slate-800 placeholder-slate-300" placeholder="Misal: Sosialisasi Pencegahan Stunting..."></textarea>
+                            </div>
+                            <div class="pt-1">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Tag Edisi / Spesial</label>
+                                <input type="text" id="in_edisi" oninput="updateBasicInfo()" class="w-full glass-input px-4 py-3 text-sm font-medium placeholder-slate-300" placeholder="Misal: Spesial Hari Ibu">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 pt-1">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Tanggal</label>
+                                    <div class="relative">
+                                        <i class="fa-regular fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input type="text" id="in_tanggal" oninput="updateBasicInfo()" class="w-full glass-input pl-9 pr-3 py-3 text-sm font-medium placeholder-slate-300" placeholder="25 Mei 2026">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Waktu</label>
+                                    <div class="relative">
+                                        <i class="fa-regular fa-clock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input type="text" id="in_jam" oninput="updateBasicInfo()" class="w-full glass-input pl-9 pr-3 py-3 text-sm font-medium placeholder-slate-300" placeholder="09:00 WIB">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-1">
+                                <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest" id="label_live">Lokasi / Platform</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-location-dot absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text" id="in_live" oninput="updateBasicInfo()" value="Facebook : Puskesmas Gumer" class="w-full glass-input pl-9 pr-4 py-3 text-sm font-bold text-teal-700" placeholder="Facebook : Puskesmas Gumer">
+                                </div>
                             </div>
                         </div>
                     </section>
 
                     <!-- NARSUM -->
-                    <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/50">
-                        <div class="flex justify-between items-center mb-5">
-                            <h2 class="text-sm font-poppins font-bold text-slate-800 flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-user-doctor text-xs"></i></span>
-                                Narasumber Ahli
-                            </h2>
-                            <button onclick="addNarsum()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold transition-colors">
+                    <section class="premium-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                                    <i class="fa-solid fa-user-doctor text-sm"></i>
+                                </div>
+                                <h2 class="text-sm font-poppins font-bold text-slate-800">Narasumber</h2>
+                            </div>
+                            <button onclick="addNarsum()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-bold transition-colors border border-slate-200 shadow-sm">
                                 <i class="fa-solid fa-plus mr-1"></i> Tambah
                             </button>
                         </div>
                         <div id="narsum-form-container" class="space-y-4">
                             <!-- Default Narsum 1 -->
-                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3 relative">
-                                <label class="file-upload-btn" id="lbl_narsum_1">
-                                    <i class="fa-regular fa-image"></i> <span>Foto Narsum 1</span>
+                            <div class="p-5 bg-[#F8FAFC] rounded-[18px] border border-slate-200/80 space-y-3 relative group transition-colors hover:border-blue-200">
+                                <label class="file-upload-btn bg-white" id="lbl_narsum_1">
+                                    <i class="fa-regular fa-image text-slate-400"></i> <span>Foto Narsum 1</span>
                                     <input type="file" id="in_foto_narsum_1" accept="image/*" onchange="handleNarsumImage(this, 1)">
                                 </label>
-                                <input type="text" id="in_nama_narsum_1" oninput="updateNarsumData()" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm font-semibold" placeholder="Nama (dr. Budi)">
-                                <input type="text" id="in_jabatan_narsum_1" oninput="updateNarsumData()" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="Jabatan / Instansi">
+                                <input type="text" id="in_nama_narsum_1" oninput="updateNarsumData()" class="w-full glass-input px-4 py-3 text-sm font-semibold" placeholder="Nama (dr. Budi)">
+                                <input type="text" id="in_jabatan_narsum_1" oninput="updateNarsumData()" class="w-full glass-input px-4 py-3 text-sm" placeholder="Jabatan / Instansi">
                             </div>
                         </div>
                     </section>
 
                     <!-- HOST -->
-                    <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/50">
-                        <h2 class="text-sm font-poppins font-bold text-slate-800 mb-5 flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-md bg-orange-50 text-orange-600 flex items-center justify-center"><i class="fa-solid fa-microphone text-xs"></i></span>
-                            Moderator / Host
-                        </h2>
+                    <section class="premium-card p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                                <i class="fa-solid fa-microphone text-sm"></i>
+                            </div>
+                            <h2 class="text-sm font-poppins font-bold text-slate-800">Host / Moderator</h2>
+                        </div>
                         <div class="space-y-3">
                             <label class="file-upload-btn" id="lbl_host">
-                                <i class="fa-regular fa-image"></i> <span>Unggah Foto Host</span>
+                                <i class="fa-regular fa-image text-slate-400"></i> <span>Unggah Foto Host</span>
                                 <input type="file" id="in_foto_host" accept="image/*">
                             </label>
-                            <input type="text" id="in_nama_host" oninput="updateBasicInfo()" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm font-semibold" placeholder="Nama Host (Siti, SKM)">
+                            <input type="text" id="in_nama_host" oninput="updateBasicInfo()" class="w-full glass-input px-4 py-3 text-sm font-semibold" placeholder="Nama Host (Siti, SKM)">
                         </div>
                     </section>
 
-                    <!-- AI MAGIC (ACCORDION AT BOTTOM) -->
-                    <section class="bg-slate-900 rounded-3xl p-1 shadow-lg relative overflow-hidden">
-                        <div class="bg-slate-800 rounded-[22px] p-5 relative z-10">
-                            <div class="flex items-center justify-between cursor-pointer group select-none" onclick="toggleAIMagic()">
+                    <!-- AI MAGIC (PREMIUM SECTION) -->
+                    <section class="rounded-[24px] p-[2px] shadow-lg relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 group">
+                        <!-- Animated border effect -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-teal-500 via-purple-500 to-pink-500 opacity-20 blur-sm group-hover:opacity-40 transition-opacity duration-500"></div>
+                        
+                        <div class="bg-slate-900 rounded-[22px] p-6 relative z-10">
+                            <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleAIMagic()">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                                        <i class="fa-solid fa-wand-magic-sparkles text-white text-xs"></i>
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-white text-sm"></i>
                                     </div>
-                                    <h2 class="text-sm font-poppins font-bold text-white tracking-wide">AI Studio Magic</h2>
+                                    <h2 class="text-[15px] font-poppins font-bold text-white tracking-wide">AI Studio Magic</h2>
                                 </div>
-                                <i id="ai-magic-chevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
+                                    <i id="ai-magic-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                                </div>
                             </div>
                             
-                            <div id="ai-magic-content" class="space-y-4 hidden mt-5 pt-5 border-t border-slate-700/50">
-                                <p class="text-[10px] text-pink-400 font-bold flex items-center gap-1.5 uppercase tracking-wider mb-2">
-                                    <i class="fa-solid fa-wifi animate-pulse"></i> Fitur Wajib Online
-                                </p>
-                                <button id="btn-ai-layout" onclick="generateAILayout()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 animate-gradient-x text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 text-sm border border-white/10">
-                                    <i class="fa-solid fa-pen-nib"></i> Desain Auto-Pilot
-                                </button>
+                            <div id="ai-magic-content" class="space-y-5 hidden mt-6 pt-6 border-t border-slate-800">
+                                <div class="flex items-center gap-2 bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                                    <span class="relative flex h-2.5 w-2.5">
+                                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                    </span>
+                                    <p class="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Membutuhkan Koneksi Internet</p>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button id="btn-ai-layout" onclick="generateAILayout()" class="btn-ai-magic w-full text-white font-bold py-3 px-3 rounded-xl shadow-lg active:scale-95 flex flex-col items-center justify-center gap-1.5 text-xs border border-white/10">
+                                        <i class="fa-solid fa-palette text-lg mb-1"></i> Desain Auto-Pilot
+                                    </button>
+                                    <button id="btn-ai-script" onclick="generateAIScript()" class="bg-gradient-to-br from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 w-full text-white font-bold py-3 px-3 rounded-xl shadow-lg active:scale-95 flex flex-col items-center justify-center gap-1.5 text-xs border border-slate-600">
+                                        <i class="fa-solid fa-file-word text-lg mb-1 text-blue-400"></i> Buat Script
+                                    </button>
+                                </div>
                                 
                                 <div class="pt-2">
-                                    <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-widest font-semibold">Generate Latar Saja</p>
+                                    <p class="text-[10px] text-slate-400 mb-2.5 uppercase tracking-widest font-bold">Generate Latar Khusus</p>
                                     <div class="flex gap-2">
-                                        <input type="text" id="in_prompt_bg" class="flex-1 bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-purple-500 outline-none" placeholder="Latar ruang operasi...">
-                                        <button id="btn-ai-bg" onclick="generateAIBackground()" class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-3 rounded-xl transition-colors text-xs border border-white/5 active:scale-95">
+                                        <div class="relative flex-1">
+                                            <i class="fa-solid fa-image absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                            <input type="text" id="in_prompt_bg" class="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded-xl pl-8 pr-3 py-3 text-xs focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-slate-500" placeholder="Latar ruang operasi biru...">
+                                        </div>
+                                        <button id="btn-ai-bg" onclick="generateAIBackground()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl transition-colors text-xs border border-slate-600 active:scale-95 shadow-md">
                                             Buat
                                         </button>
                                     </div>
@@ -493,15 +528,15 @@
                 </div>
             </div>
 
-            <!-- ================= PANEL KANAN: PREVIEW (TAB 2 PADA MOBILE) ================= -->
-            <div id="tab-preview" class="tab-content w-full lg:w-[55%] xl:w-[60%] canvas-bg flex-col items-center overflow-y-auto custom-scrollbar p-4 sm:p-8 pb-24 lg:pb-8">
+            <!-- ================= PANEL KANAN: PREVIEW (DENGAN FIX MOBILE SCROLL h-full) ================= -->
+            <div id="tab-preview" class="tab-content w-full lg:w-[58%] xl:w-[65%] canvas-bg flex-col items-center h-full overflow-y-auto custom-scrollbar p-4 sm:p-8 pb-40 lg:pb-8">
                 
-                <!-- Wrapper Device Mockup -->
-                <div class="w-full max-w-[420px] mx-auto bg-white p-2 rounded-[24px] shadow-2xl border border-slate-200/60 relative">
-                    <!-- Status Bar Dummy -->
-                    <div class="absolute top-4 left-1/2 -translate-x-1/2 w-1/3 h-4 bg-black rounded-full z-20 opacity-20 hidden sm:block pointer-events-none"></div>
+                <!-- Premium Device Mockup Wrapper -->
+                <div class="w-full max-w-[420px] mx-auto bg-white p-3 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-slate-200 relative group flex-shrink-0">
+                    <!-- Status Bar Dummy (Sleek) -->
+                    <div class="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-800 rounded-full z-20 opacity-20 hidden sm:block pointer-events-none"></div>
                     
-                    <div id="poster-capture-area" class="poster-container rounded-[16px]" data-theme="umum" data-narsum-count="1">
+                    <div id="poster-capture-area" class="poster-container rounded-[1.25rem] shadow-inner" data-theme="umum" data-narsum-count="1">
                         <div class="shape shape-1" id="shape-1"></div>
                         <div class="shape shape-2" id="shape-2"></div>
                         
@@ -567,49 +602,49 @@
                     </div>
                 </div>
 
-                <!-- Caption Area -->
-                <div class="w-full max-w-[420px] mx-auto mt-6 bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden">
-                    <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="text-xs font-bold text-slate-700 flex items-center gap-2 uppercase tracking-widest">
-                            <i class="fa-regular fa-comment-dots text-teal-500 text-lg"></i> Caption Post
+                <!-- Caption Box Premium -->
+                <div class="w-full max-w-[420px] mx-auto mt-6 premium-card overflow-hidden border-none shadow-[0_10px_30px_rgba(0,0,0,0.04)] flex-shrink-0">
+                    <div class="bg-gradient-to-r from-slate-50 to-white px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="text-[11px] font-bold text-slate-700 flex items-center gap-2 uppercase tracking-widest">
+                            <i class="fa-regular fa-comment-dots text-teal-500 text-base"></i> Teks Caption
                         </h3>
                         <div class="flex gap-2">
-                            <button id="btn-ai-caption" onclick="generateAICaption()" class="text-[10px] uppercase tracking-wider bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
-                                <i class="fa-solid fa-sparkles"></i> AI Buat
+                            <button id="btn-ai-caption" onclick="generateAICaption()" class="text-[10px] uppercase tracking-wider bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 active:scale-95 border border-teal-200">
+                                <i class="fa-solid fa-sparkles text-teal-500"></i> Buat AI
                             </button>
-                            <button onclick="copyCaption()" class="text-[10px] uppercase tracking-wider bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg font-bold transition-colors flex items-center gap-1.5 active:scale-95">
+                            <button onclick="copyCaption()" class="text-[10px] uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-bold transition-colors flex items-center gap-1.5 active:scale-95">
                                 <i class="fa-regular fa-copy"></i> Salin
                             </button>
                         </div>
                     </div>
-                    <textarea id="out_caption" rows="5" class="w-full text-sm p-5 border-none focus:ring-0 resize-none text-slate-600 leading-relaxed font-medium bg-white" placeholder="Caption sosial media otomatis akan muncul di sini..."></textarea>
+                    <textarea id="out_caption" rows="5" class="w-full text-sm p-5 border-none focus:ring-0 resize-none text-slate-600 leading-relaxed font-medium bg-white" placeholder="Caption pintar untuk media sosial akan muncul di sini..."></textarea>
                 </div>
 
             </div>
         </main>
 
-        <!-- MOBILE BOTTOM NAVIGATION -->
-        <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-slate-200/50 pb-safe z-40 flex px-2 py-2 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-            <button onclick="switchTab('editor')" id="btn-tab-editor" class="flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors">
-                <i class="fa-solid fa-pen-ruler text-xl mb-1"></i>
+        <!-- FLOATING MOBILE BOTTOM NAVIGATION (iOS Style) -->
+        <div class="lg:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-white/90 backdrop-blur-xl border border-slate-200 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.12)] z-40 flex px-2 py-2 items-center justify-between">
+            <button onclick="switchTab('editor')" id="btn-tab-editor" class="flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors rounded-xl hover:bg-slate-50">
+                <i class="fa-solid fa-pen-ruler text-xl mb-1.5"></i>
                 <span class="text-[10px] font-bold tracking-wide">Editor Data</span>
             </button>
             
-            <!-- Floating Export Button -->
-            <div class="relative -top-6 mx-2">
-                <button onclick="downloadPoster()" class="w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-xl shadow-slate-900/30 transform transition-transform active:scale-90 border-4 border-white">
-                    <i class="fa-solid fa-download text-lg"></i>
+            <!-- Floating Export Button inside Dock -->
+            <div class="mx-2 relative -top-5">
+                <button onclick="downloadPoster()" class="w-[60px] h-[60px] bg-slate-900 text-white rounded-[20px] flex flex-col items-center justify-center shadow-[0_15px_30px_rgba(15,23,42,0.3)] transform transition-transform active:scale-90 border-4 border-white">
+                    <i class="fa-solid fa-download text-lg mb-0.5"></i>
                 </button>
             </div>
 
-            <button onclick="switchTab('preview')" id="btn-tab-preview" class="flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors">
-                <i class="fa-regular fa-image text-xl mb-1"></i>
+            <button onclick="switchTab('preview')" id="btn-tab-preview" class="flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors rounded-xl hover:bg-slate-50">
+                <i class="fa-regular fa-image text-xl mb-1.5"></i>
                 <span class="text-[10px] font-bold tracking-wide">Lihat Poster</span>
             </button>
         </div>
 
         <!-- Global Toast Container -->
-        <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[150] flex flex-col gap-2 w-[90%] max-w-[350px]"></div>
+        <div id="toast-container" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[150] flex flex-col gap-3 w-[90%] max-w-[350px]"></div>
     </div>
 
     <script>
@@ -627,11 +662,11 @@
             const btnPr = document.getElementById('btn-tab-preview');
             
             if(tabName === 'editor') {
-                btnEd.className = 'flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors';
-                btnPr.className = 'flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors';
+                btnEd.className = 'flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors rounded-xl hover:bg-slate-50 bg-teal-50/50';
+                btnPr.className = 'flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors rounded-xl hover:bg-slate-50';
             } else {
-                btnPr.className = 'flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors';
-                btnEd.className = 'flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors';
+                btnPr.className = 'flex-1 flex flex-col items-center justify-center py-2 text-teal-600 transition-colors rounded-xl hover:bg-slate-50 bg-teal-50/50';
+                btnEd.className = 'flex-1 flex flex-col items-center justify-center py-2 text-slate-400 transition-colors rounded-xl hover:bg-slate-50';
                 window.scrollTo(0,0);
             }
         }
@@ -649,17 +684,21 @@
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            let baseClass = "px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all duration-300 transform -translate-y-10 opacity-0 w-full backdrop-blur-md border";
-            if(type === 'success') toast.className = `${baseClass} bg-teal-900/90 text-white border-teal-700`;
-            else if(type === 'error') toast.className = `${baseClass} bg-red-900/90 text-white border-red-700`;
-            else toast.className = `${baseClass} bg-slate-900/90 text-white border-slate-700`;
+            let baseClass = "px-5 py-3.5 rounded-[16px] shadow-[0_10px_40px_rgba(0,0,0,0.2)] flex items-center gap-3 transition-all duration-400 transform -translate-y-10 opacity-0 w-full backdrop-blur-xl border";
             
-            let icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-teal-400"></i>' : (type === 'error' ? '<i class="fa-solid fa-circle-exclamation text-red-400"></i>' : '<i class="fa-solid fa-bell"></i>');
-            toast.innerHTML = `${icon} <span class="text-xs font-bold flex-1 tracking-wide">${message}</span>`;
+            if(type === 'success') toast.className = `${baseClass} bg-slate-900/95 text-white border-slate-700`;
+            else if(type === 'error') toast.className = `${baseClass} bg-red-900/95 text-white border-red-700`;
+            else toast.className = `${baseClass} bg-slate-800/95 text-white border-slate-600`;
+            
+            let icon = type === 'success' ? '<div class="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center"><i class="fa-solid fa-check text-emerald-400 text-sm"></i></div>' 
+                     : (type === 'error' ? '<div class="w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-exclamation text-red-400 text-sm"></i></div>' 
+                     : '<i class="fa-solid fa-bell"></i>');
+                     
+            toast.innerHTML = `${icon} <span class="text-[13px] font-bold flex-1 tracking-wide">${message}</span>`;
             
             container.appendChild(toast);
             requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
-            setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+            setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 400); }, 3500);
         }
 
         function toggleLoading(show, text = "Memproses...") {
@@ -674,12 +713,13 @@
             const p = document.getElementById('login-pass').value.trim();
             if(u === "promkes" && p === "cerkes") {
                 document.getElementById('login-screen').style.opacity = '0';
+                document.getElementById('login-screen').style.transform = 'scale(1.05)';
                 setTimeout(() => {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('main-app').classList.replace('hidden', 'flex');
                     showToast('Welcome to Workspace!', 'success');
                     updateBasicInfo();
-                }, 400);
+                }, 500);
             } else {
                 const err = document.getElementById('pesan-error');
                 err.classList.remove('hidden'); setTimeout(() => err.classList.add('hidden'), 3000);
@@ -713,14 +753,16 @@
             if(inputElement.files && inputElement.files[0]) {
                 lbl.classList.add('has-file');
                 lbl.querySelector('span').innerText = 'Foto Terpilih ✓';
+                lbl.querySelector('i').className = 'fa-solid fa-circle-check';
             } else {
                 lbl.classList.remove('has-file');
                 lbl.querySelector('span').innerText = defaultText;
+                lbl.querySelector('i').className = 'fa-solid fa-cloud-arrow-up text-slate-400 group-hover:text-teal-500 transition-colors';
             }
         }
 
         document.getElementById('in_logo').addEventListener('change', function() {
-            updateFileLabel(this, 'lbl_logo', 'Pilih Gambar Logo');
+            updateFileLabel(this, 'lbl_logo', 'Unggah Logo Baru');
             const file = this.files[0];
             if (file && file.type.startsWith('image/')) {
                 const r = new FileReader();
@@ -737,7 +779,13 @@
         });
 
         document.getElementById('in_foto_host').addEventListener('change', function() {
-            updateFileLabel(this, 'lbl_host', 'Unggah Foto Host');
+            const lbl = document.getElementById('lbl_host');
+            if(this.files && this.files[0]) {
+                lbl.classList.add('has-file'); lbl.querySelector('span').innerText = 'Foto Terpilih ✓'; lbl.querySelector('i').className = 'fa-solid fa-circle-check';
+            } else {
+                lbl.classList.remove('has-file'); lbl.querySelector('span').innerText = 'Unggah Foto Host'; lbl.querySelector('i').className = 'fa-regular fa-image text-slate-400';
+            }
+            
             const file = this.files[0];
             if (file && file.type.startsWith('image/')) {
                 const r = new FileReader();
@@ -747,7 +795,13 @@
         });
 
         function handleNarsumImage(input, id) {
-            updateFileLabel(input, `lbl_narsum_${id}`, `Foto Narsum ${id}`);
+            const lbl = document.getElementById(`lbl_narsum_${id}`);
+            if(input.files && input.files[0]) {
+                lbl.classList.add('has-file'); lbl.querySelector('span').innerText = 'Foto Terpilih ✓'; lbl.querySelector('i').className = 'fa-solid fa-circle-check';
+            } else {
+                lbl.classList.remove('has-file'); lbl.querySelector('span').innerText = `Foto Narsum ${id}`; lbl.querySelector('i').className = 'fa-regular fa-image text-slate-400';
+            }
+
             const file = input.files[0];
             if (file && file.type.startsWith('image/')) {
                 const r = new FileReader();
@@ -762,14 +816,14 @@
             narsumCount++;
             
             const formHtml = `
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3 relative animate-[fadeIn_0.3s]" id="ns_group_${narsumCount}">
-                    <button onclick="removeNarsum(${narsumCount})" class="absolute top-2 right-2 text-red-400 hover:bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button>
-                    <label class="file-upload-btn mt-2" id="lbl_narsum_${narsumCount}">
-                        <i class="fa-regular fa-image"></i> <span>Foto Narsum ${narsumCount}</span>
+                <div class="p-5 bg-[#F8FAFC] rounded-[18px] border border-slate-200/80 space-y-3 relative group transition-colors hover:border-blue-200 animate-[fadeIn_0.3s]" id="ns_group_${narsumCount}">
+                    <button onclick="removeNarsum(${narsumCount})" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                    <label class="file-upload-btn bg-white mt-1" id="lbl_narsum_${narsumCount}">
+                        <i class="fa-regular fa-image text-slate-400"></i> <span>Foto Narsum ${narsumCount}</span>
                         <input type="file" id="in_foto_narsum_${narsumCount}" accept="image/*" onchange="handleNarsumImage(this, ${narsumCount})">
                     </label>
-                    <input type="text" id="in_nama_narsum_${narsumCount}" oninput="updateNarsumData()" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm font-semibold" placeholder="Nama Narsum ${narsumCount}">
-                    <input type="text" id="in_jabatan_narsum_${narsumCount}" oninput="updateNarsumData()" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm" placeholder="Jabatan">
+                    <input type="text" id="in_nama_narsum_${narsumCount}" oninput="updateNarsumData()" class="w-full glass-input px-4 py-3 text-sm font-semibold" placeholder="Nama Narsum ${narsumCount}">
+                    <input type="text" id="in_jabatan_narsum_${narsumCount}" oninput="updateNarsumData()" class="w-full glass-input px-4 py-3 text-sm" placeholder="Jabatan">
                 </div>
             `;
             document.getElementById('narsum-form-container').insertAdjacentHTML('beforeend', formHtml);
@@ -819,26 +873,25 @@
         function updateNetworkStatus() {
             const isOnline = navigator.onLine;
             const sEl = document.getElementById('network-status');
-            const sTxt = document.getElementById('network-text');
             const btnL = document.getElementById('btn-ai-layout');
             const btnB = document.getElementById('btn-ai-bg');
             const btnC = document.getElementById('btn-ai-caption');
 
             if (isOnline) {
-                if(sEl) { sEl.className = 'flex items-center text-[10px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 transition-colors'; sEl.innerHTML = '<i class="fa-solid fa-wifi mr-1.5"></i> <span class="hidden sm:inline">Online</span>'; }
-                if(btnL) { btnL.disabled = false; btnL.classList.remove('opacity-50'); }
-                if(btnB) { btnB.disabled = false; btnB.classList.remove('opacity-50'); }
-                if(btnC) { btnC.innerHTML = '<i class="fa-solid fa-sparkles"></i> AI Buat'; }
+                if(sEl) { sEl.className = 'flex items-center text-[10px] sm:text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 transition-colors shadow-sm'; sEl.innerHTML = '<i class="fa-solid fa-wifi mr-1.5"></i> <span class="hidden sm:inline">Online</span>'; }
+                if(btnL) { btnL.disabled = false; btnL.classList.remove('opacity-50', 'cursor-not-allowed'); }
+                if(btnB) { btnB.disabled = false; btnB.classList.remove('opacity-50', 'cursor-not-allowed'); }
+                if(btnC) { btnC.innerHTML = '<i class="fa-solid fa-sparkles text-teal-500"></i> Buat AI'; }
             } else {
-                if(sEl) { sEl.className = 'flex items-center text-[10px] sm:text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-full border border-red-100 transition-colors'; sEl.innerHTML = '<i class="fa-solid fa-wifi-slash mr-1.5"></i> <span class="hidden sm:inline">Offline</span>'; }
-                if(btnL) { btnL.disabled = true; btnL.classList.add('opacity-50'); }
-                if(btnB) { btnB.disabled = true; btnB.classList.add('opacity-50'); }
-                if(btnC) { btnC.innerHTML = '<i class="fa-solid fa-pen-nib"></i> Buat (Lokal)'; }
+                if(sEl) { sEl.className = 'flex items-center text-[10px] sm:text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-full border border-red-200 transition-colors shadow-sm'; sEl.innerHTML = '<i class="fa-solid fa-wifi-slash mr-1.5"></i> <span class="hidden sm:inline">Offline</span>'; }
+                if(btnL) { btnL.disabled = true; btnL.classList.add('opacity-50', 'cursor-not-allowed'); }
+                if(btnB) { btnB.disabled = true; btnB.classList.add('opacity-50', 'cursor-not-allowed'); }
+                if(btnC) { btnC.innerHTML = '<i class="fa-solid fa-pen-nib text-teal-500"></i> Buat Lokal'; }
             }
         }
         window.addEventListener('online', () => { updateNetworkStatus(); showToast('Koneksi terhubung. AI Aktif!', 'success'); });
         window.addEventListener('offline', () => { updateNetworkStatus(); showToast('Offline. Fitur AI Dinonaktifkan.', 'error'); });
-        document.addEventListener('DOMContentLoaded', updateNetworkStatus);
+        document.addEventListener('DOMContentLoaded', () => { updateNetworkStatus(); switchTab('editor'); });
 
         // ================= AI CAPTION =================
         function generateLocalCaption() {
@@ -860,7 +913,7 @@
             
             const p = `Buatkan caption IG gaul Puskesmas Gunung Meriah.\nTopik: ${document.getElementById('in_tema').value.trim()}\nNarsum: ${getActiveNarsumNames()}\nHost: ${document.getElementById('in_nama_host').value.trim()}\nWaktu: ${document.getElementById('in_tanggal').value} | ${document.getElementById('in_jam').value}\nLokasi: ${document.getElementById('in_live').value}\nAturan: Ramah, ada hook, ajakan nonton, list jadwal rapi, emoji, hashtag #CERKES #PuskesmasGunungMeriah.`;
             
-            toggleLoading(true, "AI Menulis...");
+            toggleLoading(true, "AI Menulis Caption...");
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:p}]}]}) });
                 const data = await res.json();
@@ -877,12 +930,12 @@
         // ================= AI DESIGN =================
         async function generateAILayout() {
             const tema = document.getElementById('in_tema').value.trim();
-            if(!tema) return showToast('Isi Topik Kegiatan dulu!', 'error');
+            if(!tema) return showToast('Harap isi Topik Utama terlebih dahulu!', 'error');
             document.getElementById('in_theme').value = 'umum'; updateBasicInfo();
             
             const prompt = `Sebagai Desainer Grafis Profesional, rancang layout poster untuk "${tema}". Berikan JSON: {"bg_prompt":"deskripsi bg english max 50 words clean modern medical","css_vars":{"--align-header":"flex-start","--align-text":"left","--title-size":"7cqw","--title-color":"#ffffff","--narsum-dir":"column","--card-dir":"row","--frame-radius":"16px","--img-radius":"50%","--bg-start":"#0f172a","--bg-end":"#1e293b","--card-bg":"rgba(255,255,255,0.1)","--card-border":"1px solid #fff","--time-bg":"#3b82f6","--time-radius":"8px","--time-skew":"none","--time-skew-reverse":"none","--badge-bg":"#ec4899"}} Pilih warna kontras estetik.`;
             
-            toggleLoading(true, "AI Mendesain...");
+            toggleLoading(true, "AI Merancang Layout...");
             try {
                 const resText = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
                 const dataText = await resText.json();
@@ -890,38 +943,122 @@
                 const pArea = document.getElementById('poster-capture-area');
                 for(const [k,v] of Object.entries(design.css_vars)) pArea.style.setProperty(k,v);
                 
-                toggleLoading(true, "Melukis Latar...");
+                toggleLoading(true, "AI Melukis Latar...");
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; showToast('Desain AI Berhasil!'); }
-            } catch(e) { showToast('Gagal memproses AI.', 'error'); }
+                if(dataImg.predictions) { pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; showToast('Desain AI Selesai!'); }
+            } catch(e) { showToast('Gagal memproses AI Design.', 'error'); }
             finally { toggleLoading(false); }
         }
 
         async function generateAIBackground() {
             const pr = document.getElementById('in_prompt_bg').value.trim();
-            if(!pr) return showToast('Isi prompt latar!', 'error');
+            if(!pr) return showToast('Harap isi deskripsi latar!', 'error');
             document.getElementById('in_theme').value = 'umum'; updateBasicInfo();
             
-            toggleLoading(true, "Melukis Latar...");
+            toggleLoading(true, "AI Melukis Latar...");
             try {
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:`Medical empty poster bg, ${pr}`},parameters:{sampleCount:1}}) });
                 const dataImg = await resImg.json();
                 if(dataImg.predictions) { document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; showToast('Latar AI Berhasil!'); }
-            } catch(e) { showToast('Gagal muat latar.', 'error'); }
+            } catch(e) { showToast('Gagal memuat latar AI.', 'error'); }
             finally { toggleLoading(false); }
         }
 
         // ================= EXPORT =================
         function downloadPoster() {
-            showToast('Menyiapkan Resolusi Tinggi...'); window.scrollTo(0,0);
+            showToast('Menyiapkan Resolusi Tinggi HD...'); window.scrollTo(0,0);
             setTimeout(() => {
                 html2canvas(document.getElementById('poster-capture-area'), { scale: 3, useCORS: true, backgroundColor: null }).then(canvas => {
                     const l = document.createElement('a');
                     l.download = `CERKES_${(document.getElementById('in_tema').value.trim()||'Baru').substring(0,15).replace(/\s/g,'_')}.png`;
-                    l.href = canvas.toDataURL("image/png", 1.0); l.click(); showToast('Unduhan Selesai!');
+                    l.href = canvas.toDataURL("image/png", 1.0); l.click(); showToast('Unduhan HD Selesai!');
                 });
             }, 500);
+        }
+
+        // ================= AI PODCAST SCRIPT =================
+        async function generateAIScript() {
+            const tema = document.getElementById('in_tema').value.trim();
+            const host = document.getElementById('in_nama_host').value.trim() || "Host";
+            const narsum = getActiveNarsumNames();
+            
+            if(!tema) return showToast('Harap isi Topik Utama terlebih dahulu!', 'error');
+            if(!navigator.onLine) return showToast('Fitur ini wajib Online!', 'error');
+
+            const prompt = `Buatkan script talkshow/podcast lengkap (hanya teks percakapannya saja) untuk acara kesehatan.
+            Judul Acara: CERKES (Cerita Kesehatan) Puskesmas Gunung Meriah
+            Topik: ${tema}
+            Host: ${host}
+            Narasumber: ${narsum}
+            
+            Aturan Wajib:
+            1. Buat TOTAL 50 pertanyaan dari Host, beserta jawaban panjang dan detail dari Narasumber.
+            2. Berikan penomoran jelas untuk setiap pertanyaan (Pertanyaan 1, Pertanyaan 2, dst).
+            3. SETIAP KELIPATAN 10 PERTANYAAN (Setelah jawaban ke-10, 20, 30, dan 40), Host WAJIB menyapa pemirsa (Sobat Sehat) dan mengingatkan mereka untuk like, share, atau memberikan semangat. Beri label [JEDA SAPA PEMIRSA] sebelum sapaan tersebut.
+            4. Gunakan bahasa semi-formal yang santai, edukatif, dan mudah dipahami masyarakat umum.
+            5. Berikan format HTML dasar yang rapi (menggunakan <b>, <p>, <h3>) agar mudah dibaca saat diubah menjadi file Word.`;
+
+            toggleLoading(true, "AI Menulis Script (Agak Lama)...");
+            
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({
+                        contents:[{parts:[{text:prompt}]}],
+                        generationConfig: { maxOutputTokens: 8192 }
+                    }) 
+                });
+                
+                const data = await res.json();
+                
+                if(data.candidates && data.candidates[0].content.parts[0].text) {
+                    let scriptContent = data.candidates[0].content.parts[0].text;
+                    
+                    // Bersihkan dari tag markdown bawaan Gemini jika ada
+                    scriptContent = scriptContent.replace(/```html/g, '').replace(/```/g, '');
+
+                    // Format ke dalam template HTML untuk Word
+                    const wordHtml = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head><meta charset='utf-8'><title>Script CERKES - ${tema}</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; font-size: 12pt; line-height: 1.5; }
+                        h1 { text-align: center; color: #1e293b; }
+                        p { margin-bottom: 10px; }
+                        .host { color: #0284c7; font-weight: bold; }
+                        .narsum { color: #16a34a; font-weight: bold; }
+                        .jeda { background-color: #fef08a; padding: 10px; text-align: center; font-style: italic; border: 1px dashed #ca8a04; margin: 20px 0; }
+                    </style>
+                    </head>
+                    <body>
+                        <h1>SCRIPT PODCAST CERKES</h1>
+                        <p style="text-align:center; font-style:italic; margin-bottom: 30px;">Topik: <b>${tema}</b><br>Puskesmas Gunung Meriah</p>
+                        ${scriptContent}
+                    </body>
+                    </html>`;
+
+                    // Proses Download sebagai .doc
+                    const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `Script_CERKES_${tema.substring(0, 15).replace(/\s/g, '_')}.doc`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showToast('Script berhasil diunduh (Cek file Word!)', 'success');
+                } else {
+                    showToast('Gagal mendapatkan respon AI', 'error');
+                }
+            } catch(error) {
+                console.error(error);
+                showToast('Gagal memproses script. Coba lagi nanti.', 'error');
+            } finally {
+                toggleLoading(false);
+            }
         }
     </script>
 </body>
