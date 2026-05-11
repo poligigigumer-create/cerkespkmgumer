@@ -937,55 +937,40 @@
             
             toggleLoading(true, "AI Merancang Layout...");
             try {
-                // 1. CEK TOKEN DAN KUOTA UNTUK TEKS
                 const resText = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:"application/json"}}) });
                 
-                if (!resText.ok) {
-                    if (resText.status === 429) throw new Error("KUOTA HABIS: Batas penggunaan Token AI Anda sudah penuh.");
-                    if (resText.status === 400 || resText.status === 403) throw new Error("TOKEN TIDAK VALID: Cek kembali tulisan API Key Anda.");
-                    throw new Error("Gagal terhubung ke sistem AI.");
-                }
+                // DETEKTIF PENOLAKAN GOOGLE
+                if (!resText.ok) throw new Error("API Key salah atau Kuota Habis (Error " + resText.status + ")");
 
                 const dataText = await resText.json();
                 let rawText = dataText.candidates[0].content.parts[0].text;
-                
-                // Ekstrak paksa hanya bagian yang dibutuhkan
-                const jsonStart = rawText.indexOf('{');
-                const jsonEnd = rawText.lastIndexOf('}');
-                if (jsonStart === -1 || jsonEnd === -1) throw new Error("AI memberikan format desain yang salah.");
-                
-                rawText = rawText.substring(jsonStart, jsonEnd + 1);
+                rawText = rawText.replace(/```json/g, '').replace(/
+```/g, '');
                 const design = JSON.parse(rawText);
                 
                 const pArea = document.getElementById('poster-capture-area');
                 for(const [k,v] of Object.entries(design.css_vars)) pArea.style.setProperty(k,v);
                 
                 toggleLoading(true, "AI Melukis Latar...");
-                
-                // 2. CEK TOKEN DAN KUOTA UNTUK GAMBAR
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:design.bg_prompt},parameters:{sampleCount:1}}) });
                 
-                if (!resImg.ok) {
-                    if (resImg.status === 429) throw new Error("KUOTA GAMBAR HABIS: Token AI untuk gambar sudah mencapai batas.");
-                    if (resImg.status === 400 || resImg.status === 403) throw new Error("FITUR GAMBAR DITOLAK: Pastikan API Key diizinkan untuk membuat gambar.");
-                    throw new Error("Gagal mengambil gambar dari AI.");
-                }
+                // DETEKTIF PENOLAKAN GOOGLE GAMBAR
+                if (!resImg.ok) throw new Error("Fitur Gambar Ditolak atau Kuota Habis (Error " + resImg.status + ")");
 
                 const dataImg = await resImg.json();
-                if(dataImg.predictions && dataImg.predictions[0]) { 
+                if(dataImg.predictions) { 
                     pArea.style.backgroundImage = `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
-                    showToast('Desain AI Selesai!', 'success'); 
+                    showToast('Desain AI Selesai!'); 
                 } else {
-                    throw new Error("AI gagal mengirimkan gambar.");
+                    throw new Error("Gambar gagal dibuat oleh AI.");
                 }
             } catch(e) { 
-                console.error("Laporan Error:", e);
-                // Memunculkan peringatan spesifik ke layar
+                console.error(e);
                 showToast(e.message || 'Gagal memproses AI Design.', 'error'); 
             }
             finally { toggleLoading(false); }
         }
-        
+
         async function generateAIBackground() {
             const pr = document.getElementById('in_prompt_bg').value.trim();
             if(!pr) return showToast('Harap isi deskripsi latar!', 'error');
@@ -994,9 +979,20 @@
             toggleLoading(true, "AI Melukis Latar...");
             try {
                 const resImg = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({instances:{prompt:`Medical empty poster bg, ${pr}`},parameters:{sampleCount:1}}) });
+                
+                // DETEKTIF PENOLAKAN GOOGLE GAMBAR
+                if (!resImg.ok) throw new Error("API Key salah atau Kuota Habis (Error " + resImg.status + ")");
+
                 const dataImg = await resImg.json();
-                if(dataImg.predictions) { document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; showToast('Latar AI Berhasil!'); }
-            } catch(e) { showToast('Gagal memuat latar AI.', 'error'); }
+                if(dataImg.predictions) { 
+                    document.getElementById('poster-capture-area').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.8)), url(data:image/png;base64,${dataImg.predictions[0].bytesBase64Encoded})`; 
+                    showToast('Latar AI Berhasil!'); 
+                } else {
+                    throw new Error("Gagal mendapat gambar dari AI.");
+                }
+            } catch(e) { 
+                showToast(e.message || 'Gagal memuat latar AI.', 'error'); 
+            }
             finally { toggleLoading(false); }
         }
 
@@ -1046,15 +1042,15 @@
                     }) 
                 });
                 
+                // DETEKTIF PENOLAKAN GOOGLE
+                if (!res.ok) throw new Error("API Key salah atau Kuota Habis (Error " + res.status + ")");
+
                 const data = await res.json();
                 
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     let scriptContent = data.candidates[0].content.parts[0].text;
-                    
-                    // Bersihkan dari tag markdown bawaan Gemini jika ada
                     scriptContent = scriptContent.replace(/```html/g, '').replace(/```/g, '');
 
-                    // Format ke dalam template HTML untuk Word
                     const wordHtml = `
                     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                     <head><meta charset='utf-8'><title>Script CERKES - ${tema}</title>
@@ -1074,7 +1070,6 @@
                     </body>
                     </html>`;
 
-                    // Proses Download sebagai .doc
                     const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -1086,11 +1081,11 @@
                     
                     showToast('Script berhasil diunduh (Cek file Word!)', 'success');
                 } else {
-                    showToast('Gagal mendapatkan respon AI', 'error');
+                    throw new Error("AI membalas dengan teks kosong.");
                 }
             } catch(error) {
                 console.error(error);
-                showToast('Gagal memproses script. Coba lagi nanti.', 'error');
+                showToast(error.message || 'Gagal memproses script. Coba lagi nanti.', 'error');
             } finally {
                 toggleLoading(false);
             }
